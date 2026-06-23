@@ -60,22 +60,28 @@
 
       <!-- Task List -->
       <ion-list v-if="tasks.length > 0" class="ion-margin">
-        <ion-item v-for="task in tasks" :key="task.id">
-          <ion-checkbox 
-            slot="start" 
+        <ion-item
+          v-for="task in tasks"
+          :key="task.id"
+          button
+          @click="navigateToTaskDetail(task.id)"
+        >
+          <ion-checkbox
+            slot="start"
             :checked="task.done"
             @ionChange="store.toggleTask(task.id)"
+            @click.stop
           ></ion-checkbox>
           
           <ion-label :class="{ 'task-done': task.done }">
             {{ task.name }}
           </ion-label>
           
-          <ion-button 
-            slot="end" 
-            color="danger" 
+          <ion-button
+            slot="end"
+            color="danger"
             size="small"
-            @click="store.removeTask(task.id)"
+            @click.stop="store.removeTask(task.id)"
           >
             Remove
           </ion-button>
@@ -94,12 +100,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { 
-  IonPage, 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
   IonContent,
   IonCard,
   IonCardContent,
@@ -119,6 +126,8 @@ import {
 import { add } from 'ionicons/icons'
 import { useTaskStore } from '@/stores/taskStore'
 
+const router = useRouter()
+
 // Store setup - Using Pinia for state management
 const store = useTaskStore()
 const { tasks, totalCount, doneCount, pendingCount, hasDone } = storeToRefs(store)
@@ -132,6 +141,11 @@ function handleAddTask() {
     store.addTask(newTaskName.value)
     newTaskName.value = ''
   }
+}
+
+// Navigate to task detail page
+function navigateToTaskDetail(taskId: number) {
+  router.push(`/tabs/tasks/${taskId}`)
 }
 </script>
 
