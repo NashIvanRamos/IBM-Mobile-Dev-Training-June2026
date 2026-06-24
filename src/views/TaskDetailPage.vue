@@ -50,18 +50,31 @@
             </ion-item>
           </ion-list>
 
+          <div v-if="task.photo" class="ion-margin-top">
+            <ion-img :src="task.photo" class="task-photo" />
+          </div>
+
           <div class="button-group ion-margin-top">
-            <ion-button 
-              expand="block" 
+            <ion-button
+              expand="block"
+              color="tertiary"
+              @click="handleTakePhoto"
+            >
+              <ion-icon slot="start" :icon="cameraIcon"></ion-icon>
+              {{ task.photo ? 'Replace Photo' : 'Add Photo' }}
+            </ion-button>
+
+            <ion-button
+              expand="block"
               :color="task.done ? 'warning' : 'success'"
               @click="toggleTaskStatus"
             >
               <ion-icon slot="start" :icon="task.done ? closeCircle : checkmarkCircle"></ion-icon>
               {{ task.done ? 'Mark as Pending' : 'Mark as Complete' }}
             </ion-button>
-            
-            <ion-button 
-              expand="block" 
+
+            <ion-button
+              expand="block"
               color="danger"
               @click="handleDeleteTask"
             >
@@ -105,9 +118,11 @@ import {
   IonButton,
   IonIcon,
   IonBadge,
-  IonText
+  IonText,
+  IonImg
 } from '@ionic/vue'
-import { checkmarkCircle, closeCircle, trash } from 'ionicons/icons'
+import { checkmarkCircle, closeCircle, trash, camera as cameraIcon } from 'ionicons/icons'
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { useTaskStore } from '@/stores/taskStore'
 
 const route = useRoute()
@@ -134,6 +149,23 @@ function handleDeleteTask() {
     router.push('/tabs/tasks')
   }
 }
+
+async function handleTakePhoto() {
+  if (!task.value) return
+  try {
+    const photo = await Camera.getPhoto({
+      quality: 80,
+      allowEditing: false,
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Prompt
+    })
+    if (photo.webPath) {
+      store.addPhotoToTask(task.value.id, photo.webPath)
+    }
+  } catch (err) {
+    console.warn('Photo capture cancelled or failed', err)
+  }
+}
 </script>
 
 <style scoped>
@@ -149,5 +181,12 @@ ion-card {
 
 ion-badge {
   margin-top: 8px;
+}
+
+.task-photo {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 </style>

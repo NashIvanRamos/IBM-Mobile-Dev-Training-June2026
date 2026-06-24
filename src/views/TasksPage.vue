@@ -72,7 +72,11 @@
             @ionChange="store.toggleTask(task.id)"
             @click.stop
           ></ion-checkbox>
-          
+
+          <ion-thumbnail v-if="task.photo" slot="start" class="task-thumb">
+            <ion-img :src="task.photo" />
+          </ion-thumbnail>
+
           <ion-label :class="{ 'task-done': task.done }">
             {{ task.name }}
           </ion-label>
@@ -121,7 +125,9 @@ import {
   IonText,
   IonFab,
   IonFabButton,
-  IonIcon
+  IonIcon,
+  IonThumbnail,
+  IonImg
 } from '@ionic/vue'
 import { add } from 'ionicons/icons'
 import { useTaskStore } from '@/stores/taskStore'
@@ -172,5 +178,11 @@ ion-item {
   --background: var(--ion-color-light);
   margin-bottom: 8px;
   border-radius: 8px;
+}
+
+.task-thumb {
+  --size: 44px;
+  --border-radius: 6px;
+  margin-inline-end: 12px;
 }
 </style>

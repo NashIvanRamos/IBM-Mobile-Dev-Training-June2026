@@ -6,8 +6,13 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
+/**
+ * @typedef {{ id: number, name: string, done: boolean, photo: string | null }} Task
+ */
+
 export const useTaskStore = defineStore('tasks', () => {
   // State
+  /** @type {import('vue').Ref<Task[]>} */
   const tasks = ref([])
   const nextId = ref(1)
 
@@ -20,11 +25,17 @@ export const useTaskStore = defineStore('tasks', () => {
   // Actions
   function addTask(name) {
     if (!name || !name.trim()) return
-    tasks.value.push({ 
-      id: nextId.value++, 
-      name: name.trim(), 
-      done: false 
+    tasks.value.push({
+      id: nextId.value++,
+      name: name.trim(),
+      done: false,
+      photo: null
     })
+  }
+
+  function addPhotoToTask(id, path) {
+    const task = tasks.value.find(t => t.id === id)
+    if (task) task.photo = path
   }
 
   function toggleTask(id) {
@@ -47,9 +58,10 @@ export const useTaskStore = defineStore('tasks', () => {
     doneCount, 
     pendingCount, 
     hasDone,
-    addTask, 
-    toggleTask, 
+    addTask,
+    toggleTask,
     removeTask,
-    removeDoneTasks
+    removeDoneTasks,
+    addPhotoToTask
   }
 })
