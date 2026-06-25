@@ -156,11 +156,13 @@ async function handleTakePhoto() {
     const photo = await Camera.getPhoto({
       quality: 80,
       allowEditing: false,
-      resultType: CameraResultType.Uri,
+      resultType: CameraResultType.Base64,
       source: CameraSource.Prompt
     })
-    if (photo.webPath) {
-      store.addPhotoToTask(task.value.id, photo.webPath)
+    if (photo.base64String) {
+      // Store as data URL for persistence across sessions
+      const dataUrl = `data:image/${photo.format};base64,${photo.base64String}`
+      store.addPhotoToTask(task.value.id, dataUrl)
     }
   } catch (err) {
     console.warn('Photo capture cancelled or failed', err)
