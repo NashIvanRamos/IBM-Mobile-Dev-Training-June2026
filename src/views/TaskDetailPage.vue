@@ -156,13 +156,11 @@ async function handleTakePhoto() {
     const photo = await Camera.getPhoto({
       quality: 80,
       allowEditing: false,
-      resultType: CameraResultType.Base64,
+      resultType: CameraResultType.Uri,
       source: CameraSource.Prompt
     })
-    if (photo.base64String) {
-      // Store as data URL for persistence across sessions
-      const dataUrl = `data:image/${photo.format};base64,${photo.base64String}`
-      store.addPhotoToTask(task.value.id, dataUrl)
+    if (photo.webPath) {
+      store.addPhotoToTask(task.value.id, photo.webPath)
     }
   } catch (err) {
     console.warn('Photo capture cancelled or failed', err)
@@ -183,12 +181,5 @@ ion-card {
 
 ion-badge {
   margin-top: 8px;
-}
-
-.task-photo {
-  width: 100%;
-  max-height: 320px;
-  object-fit: cover;
-  border-radius: 8px;
 }
 </style>
